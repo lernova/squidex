@@ -41,7 +41,7 @@ public sealed class Migrator(
                 {
                     var name = migration.ToString()!;
 
-                    log.LogInformation("Migration {migration} started.", name);
+                    LogMessages.LogMigrationStarted(log, name);
 
                     try
                     {
@@ -49,11 +49,11 @@ public sealed class Migrator(
 
                         await migration.UpdateAsync(ct);
 
-                        log.LogInformation("Migration {migration} completed after {time}ms.", name, watch.Stop());
+                        LogMessages.LogMigrationCompleted(log, name, watch.Stop());
                     }
                     catch (Exception ex)
                     {
-                        log.LogCritical(ex, "Migration {migration} failed.", name);
+                        LogMessages.LogMigrationFailed(log, name, ex);
                         throw new MigrationFailedException(name, ex);
                     }
                 }
@@ -76,7 +76,7 @@ public sealed class Migrator(
         {
             while (!await migrationStatus.TryLockAsync(ct))
             {
-                log.LogInformation("Could not acquire lock to start migrating. Trying again in {time}ms.", LockWaitMs);
+                LogMessages.LogMigrationLockRetry(log, LockWaitMs);
                 await Task.Delay(LockWaitMs, ct);
             }
         }

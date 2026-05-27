@@ -20,7 +20,7 @@ public sealed class LogCommandMiddleware(ILogger<LogCommandMiddleware> log) : IC
         {
             if (log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("Command {command} with ID {id} started.", type, context.ContextId);
+                LogMessages.LogCommandStarted(log, type, context.ContextId);
             }
 
             var watch = ValueStopwatch.StartNew();
@@ -28,22 +28,22 @@ public sealed class LogCommandMiddleware(ILogger<LogCommandMiddleware> log) : IC
             {
                 await next(context, ct);
 
-                log.LogInformation("Command {command} with ID {id} succeeded.", type, context.ContextId);
+                LogMessages.LogCommandSucceeded(log, type, context.ContextId);
             }
             finally
             {
-                log.LogInformation("Command {command} with ID {id} completed after {time}ms.", type, context.ContextId, watch.Stop());
+                LogMessages.LogCommandCompleted(log, type, context.ContextId, watch.Stop());
             }
         }
         catch (Exception ex)
         {
-            log.LogError(ex, "Command {command} with ID {id} failed.", type, context.ContextId);
+            LogMessages.LogCommandFailed(log, type, context.ContextId, ex);
             throw;
         }
 
         if (!context.IsCompleted)
         {
-            log.LogCritical("Command {command} with ID {id} not handled.", type, context.ContextId);
+            LogMessages.LogCommandNotHandled(log, type, context.ContextId);
         }
     }
 }

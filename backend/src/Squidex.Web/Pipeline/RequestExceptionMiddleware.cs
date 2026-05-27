@@ -37,7 +37,7 @@ public sealed class RequestExceptionMiddleware(RequestDelegate next)
         }
         catch (Exception ex)
         {
-            log.LogError(ex, "An unexpected exception has occurred.");
+            LogMessages.LogUnexpectedException(log, ex);
 
             if (!context.Response.HasStarted)
             {
