@@ -26,9 +26,9 @@ stages:
           deploy:
             steps:
               - download: squidex-backend
-                artifact: Squidex.zip
+                artifact: drop
               - download: squidex-frontend
-                artifact: squidex-frontend.zip
+                artifact: drop
               - script: |
                   mkdir /data/sites/squidex/wwwroot
                   cp $(Pipeline.Workspace)/squidex-backend/Squidex.zip /data/sites/squidex
