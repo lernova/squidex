@@ -32,7 +32,8 @@ stages:
               - download: squidex-frontend
                 artifact: drop
               - script: |
-                  mkdir -p /data/sites/squidex/wwwroot
+                  rm -rf /data/sites/squidex/*
+                  mkdir -p /data/sites/squidex/wwwroot                  
                   cp $(Pipeline.Workspace)/squidex-backend/drop/Squidex.zip /data/sites/squidex
                   cp $(Pipeline.Workspace)/squidex-frontend/drop/squidex-frontend.zip /data/sites/squidex/wwwroot
                   cd /data/sites/squidex
