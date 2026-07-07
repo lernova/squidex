@@ -1,0 +1,46 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+pool:
+  vmImage: ubuntu-latest
+
+resources:
+  pipelines:
+    - pipeline: squidex-backend
+      source: squidex-backend
+    - pipeline: squidex-frontend
+      source: squidex-frontend
+
+stages:
+  - stage: Deploy
+    jobs:
+    - deployment: DeployToVM
+      displayName: Deploy to Staging
+      environment:
+        name: staging
+        resourceType: VirtualMachine
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - download: squidex-backend
+                artifact: Squidex.zip
+              - download: squidex-frontend
+                artifact: squidex-frontend.zip
+              - script: |
+                  mkdir /data/sites/squidex/wwwroot
+                  cp $(Pipeline.Workspace)/squidex-backend/drop/Squidex.zip /data/sites/squidex
+                  cp $(Pipeline.Workspace)/squidex-frontend/drop/squidex-frontend.zip /data/sites/squidex/wwwroot
+                  cd /data/sites/squidex
+                  unzip -o $(Pipeline.Workspace)/squidex-backend/drop/Squidex.zip
+                  rm -f Squidex.zip
+                  cd /data/sites/squidex/wwwroot
+                  rm -rf build
+                  unzip -o squidex-frontend.zip -d build
+                  mv build/a/browser/* build
+                  rm -rf a
+                  sudo systemctl restart lernova-5003-squidex.service
+                  sudo systemctl restart nginx
+                displayName: 'Copy files and restart service'
