@@ -8,6 +8,7 @@
 using System.Text.Json;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Authentication.AWS;
 using Squidex.Domain.Apps.Core.Contents;
 using Squidex.Domain.Apps.Entities;
 using Squidex.Domain.Apps.Entities.Assets;
@@ -23,6 +24,8 @@ namespace Squidex;
 
 public static class MongoClientFactory
 {
+    private static int awsAuthenticationRegistered;
+
     public static void SetupSerializer(JsonSerializerOptions jsonSerializerOptions, BsonType representation)
     {
         // Register the serializers first.
@@ -53,6 +56,11 @@ public static class MongoClientFactory
 
     public static MongoClient Create(string? connectionString, Action<MongoClientSettings>? configure = null)
     {
+        if (Interlocked.Exchange(ref awsAuthenticationRegistered, 1) == 0)
+        {
+            MongoClientSettings.Extensions.AddAWSAuthentication();
+        }
+
         var clientSettings = MongoClientSettings.FromConnectionString(connectionString);
 
         // If we really need custom config.
