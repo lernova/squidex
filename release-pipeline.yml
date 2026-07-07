@@ -31,8 +31,8 @@ stages:
                 artifact: squidex-frontend.zip
               - script: |
                   mkdir /data/sites/squidex/wwwroot
-                  cp $(Pipeline.Workspace)/squidex-backend/drop/Squidex.zip /data/sites/squidex
-                  cp $(Pipeline.Workspace)/squidex-frontend/drop/squidex-frontend.zip /data/sites/squidex/wwwroot
+                  cp $(Pipeline.Workspace)/squidex-backend/Squidex.zip /data/sites/squidex
+                  cp $(Pipeline.Workspace)/squidex-frontend/squidex-frontend.zip /data/sites/squidex/wwwroot
                   cd /data/sites/squidex
                   unzip -o $(Pipeline.Workspace)/squidex-backend/drop/Squidex.zip
                   rm -f Squidex.zip
