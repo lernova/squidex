@@ -18,11 +18,12 @@ resources:
 stages:
   - stage: Deploy
     jobs:
-    - deployment: DeployToVM
-      displayName: Deploy to Staging
+    - deployment: DeployToSpecificResource
+      displayName: Deploy to dm-d-deb-web1
       environment:
         name: staging
         resourceType: VirtualMachine
+        resourceName: dm-d-deb-web1
       strategy:
         runOnce:
           deploy:
